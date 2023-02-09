@@ -1,4 +1,6 @@
 import "./App.css";
+import "./components/Button.css";
+import { useReducer } from "react";
 
 function App() {
   return (
@@ -7,7 +9,7 @@ function App() {
       <button className="grid__operands-darkgrey">AC</button>
       <button className="grid__operands-darkgrey">+/_</button>
       <button className="grid__operands-darkgrey">%</button>
-      <button className="grid__operands-orange">...</button>
+      <button className="grid__operands-orange">÷</button>
       <button>7</button>
       <button>8</button>
       <button>9</button>

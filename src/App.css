@@ -9,6 +9,15 @@ button {
   background-color: #D4D4D2;
 }
 
+button:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+button:active {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 6rem);
