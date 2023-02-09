@@ -3,9 +3,10 @@ button {
 	color: inherit;
 	border: 1px solid #1C1C1C;
 	padding: 0;
-	font: inherit;
+	font-size: 2rem;
 	cursor: pointer;
 	outline: inherit;
+  background-color: #D4D4D2;
 }
 
 .grid {
@@ -18,12 +19,12 @@ button {
   grid-column: 1/ -1;
   background-color: #1C1C1C;
   color: white;
-  font-size: 2.5rem;
+  font-size: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-end;
-  padding-right: 0.5rem;
+  padding: 0 0.5rem 0.5rem 0;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }
@@ -39,3 +40,14 @@ button {
 .grid__bottom-border-right {
   border-bottom-right-radius: 15px;
 }
+
+.grid__operands-orange {
+  background-color: #FF9500;
+  color: white
+}
+
+.grid__operands-darkgrey {
+  background-color: #505050;
+  color: white
+}
+
