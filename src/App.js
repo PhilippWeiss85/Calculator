@@ -4,28 +4,28 @@ import NumbersButton from "./NumbersButton";
 import { useReducer } from "react";
 
 export const ACTIONS = {
-  ADD: "add",
-  SUBSTRACT: "substract",
-  DIVIDE: "divide",
-  MULTIPLY: "multiply",
+  ADD_DIGIT: "add_digit",
+  CHOOSE_OPERATION: "operation",
   CLEAR: "clear",
   NUMBER: "number",
 };
 
 function reducer(state, { type, payload }) {
   switch (type) {
-    case ACTIONS.ADD:
-      return {
-        ...state,
-        currentOperand: `${state.currentOperand || ""}${payload.digit}`,
-      };
-    case ACTIONS.NUMBER:
+    case ACTIONS.ADD_DIGIT:
       return {
         ...state,
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
       };
     case ACTIONS.CLEAR:
       return {};
+    case ACTIONS.CHOOSE_OPERATION:
+      return {
+        ...state,
+        previousOperand: state.currentOperand,
+        operation: payload.operation,
+        currentOperand: null,
+      };
     default:
       return state;
   }
@@ -37,6 +37,8 @@ function App() {
     {}
   );
 
+  console.log(currentOperand, previousOperand, operation);
+
   return (
     <section className="grid">
       <article className="grid__output">
@@ -45,52 +47,53 @@ function App() {
       <OperationsButton
         className="grid__operands-darkgrey"
         dispatch={dispatch}
-        digit="AC"
-        actiontype="CLEAR"
+        operation="AC"
+        typefunction={ACTIONS.CLEAR}
       />
       <OperationsButton
         className="grid__operands-darkgrey"
         dispatch={dispatch}
-        digit="+/_"
-        actiontype="ADD"
+        operation="+/_"
+        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <OperationsButton
         className="grid__operands-darkgrey"
         dispatch={dispatch}
-        digit="%"
-        actiontype="DIVIDE"
+        operation="%"
+        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <OperationsButton
         dispatch={dispatch}
-        digit="÷"
+        operation="÷"
         className="grid__operands-orange"
-        actiontype="DIVIDE"
+        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton dispatch={dispatch} digit="7" />
       <NumbersButton dispatch={dispatch} digit="8" />
       <NumbersButton dispatch={dispatch} digit="9" />
       <OperationsButton
         dispatch={dispatch}
-        digit="x"
+        operation="x"
         className="grid__operands-orange"
-        actiontype="MULTIPLY"
+        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton dispatch={dispatch} digit="4" />
       <NumbersButton dispatch={dispatch} digit="5" />
       <NumbersButton dispatch={dispatch} digit="6" />
       <OperationsButton
         dispatch={dispatch}
-        digit="x"
+        operation="x"
         className="grid__operands-orange"
-        actiontype="SUBSTRACT"
+        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton dispatch={dispatch} digit="1" />
       <NumbersButton dispatch={dispatch} digit="2" />
       <NumbersButton dispatch={dispatch} digit="3" />
       <OperationsButton
         dispatch={dispatch}
-        digit="+"
+        operation="+"
         className="grid__operands-orange"
+        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton
         dispatch={dispatch}
@@ -100,7 +103,7 @@ function App() {
       <NumbersButton dispatch={dispatch} digit="," />
       <NumbersButton
         dispatch={dispatch}
-        digit="="
+        operation="="
         className="grid__bottom-border-right grid__operands-orange"
       />
     </section>

@@ -1,12 +1,15 @@
-import { ACTIONS } from "./App.js";
-
-function OperationsButton({ digit, dispatch, className }) {
+function OperationsButton({ typefunction, operation, dispatch, className }) {
   return (
     <button
       className={className}
-      onClick={() => dispatch({ type: ACTIONS.ADD, payload: { digit } })}
+      onClick={() =>
+        dispatch({
+          type: typefunction,
+          payload: { operation },
+        })
+      }
     >
-      {digit}
+      {operation}
     </button>
   );
 }
