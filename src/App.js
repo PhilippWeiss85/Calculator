@@ -1,74 +1,108 @@
 import "./App.css";
-import "./components/Button.css";
+import OperationsButton from "./OperationsButton";
+import NumbersButton from "./NumbersButton";
 import { useReducer } from "react";
 
-const OPERANDS = {
+export const ACTIONS = {
   ADD: "add",
   SUBSTRACT: "substract",
   DIVIDE: "divide",
   MULTIPLY: "multiply",
+  CLEAR: "clear",
+  NUMBER: "number",
 };
 
-function reducer(state, action) {
-  switch (action.type) {
-    case OPERANDS.ADD:
-      return { count: state.count + 1 };
-    case OPERANDS.SUBSTRACT:
-      return state.count - 1;
-    case OPERANDS.DIVIDE:
-      return state + 13;
-    case OPERANDS.MULTIPLY:
-      return state - 13;
+function reducer(state, { type, payload }) {
+  switch (type) {
+    case ACTIONS.ADD:
+      return {
+        ...state,
+        currentOperand: `${state.currentOperand || ""}${payload.digit}`,
+      };
+    case ACTIONS.NUMBER:
+      return {
+        ...state,
+        currentOperand: `${state.currentOperand || ""}${payload.digit}`,
+      };
+    case ACTIONS.CLEAR:
+      return {};
     default:
       return state;
   }
 }
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, { count: 1 });
-
-  function add() {
-    dispatch({ type: OPERANDS.ADD });
-  }
-  function substract() {
-    dispatch({ type: OPERANDS.SUBSTRACT });
-  }
-  function divide() {
-    dispatch({ type: OPERANDS.DIVIDE });
-  }
-  function multiply() {
-    dispatch({ type: OPERANDS.MULTIPLY });
-  }
-  function reset() {
-    dispatch();
-  }
+  const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(
+    reducer,
+    {}
+  );
 
   return (
     <section className="grid">
-      <article className="grid__output">{state.count}</article>
-      <button className="grid__operands-darkgrey">AC</button>
-      <button className="grid__operands-darkgrey">+/_</button>
-      <button className="grid__operands-darkgrey">%</button>
-      <button className="grid__operands-orange">÷</button>
-      <button>7</button>
-      <button>8</button>
-      <button>9</button>
-      <button className="grid__operands-orange">x</button>
-      <button>4</button>
-      <button>5</button>
-      <button>6</button>
-      <button className="grid__operands-orange">-</button>
-      <button>1</button>
-      <button>2</button>
-      <button>3</button>
-      <button onClick={add} className="grid__operands-orange">
-        +
-      </button>
-      <button className="grid__span-two grid__bottom-border-left">0</button>
-      <button>,</button>
-      <button className="grid__bottom-border-right grid__operands-orange">
-        =
-      </button>
+      <article className="grid__output">
+        <div>{currentOperand}</div>
+      </article>
+      <OperationsButton
+        className="grid__operands-darkgrey"
+        dispatch={dispatch}
+        digit="AC"
+        actiontype="CLEAR"
+      />
+      <OperationsButton
+        className="grid__operands-darkgrey"
+        dispatch={dispatch}
+        digit="+/_"
+        actiontype="ADD"
+      />
+      <OperationsButton
+        className="grid__operands-darkgrey"
+        dispatch={dispatch}
+        digit="%"
+        actiontype="DIVIDE"
+      />
+      <OperationsButton
+        dispatch={dispatch}
+        digit="÷"
+        className="grid__operands-orange"
+        actiontype="DIVIDE"
+      />
+      <NumbersButton dispatch={dispatch} digit="7" />
+      <NumbersButton dispatch={dispatch} digit="8" />
+      <NumbersButton dispatch={dispatch} digit="9" />
+      <OperationsButton
+        dispatch={dispatch}
+        digit="x"
+        className="grid__operands-orange"
+        actiontype="MULTIPLY"
+      />
+      <NumbersButton dispatch={dispatch} digit="4" />
+      <NumbersButton dispatch={dispatch} digit="5" />
+      <NumbersButton dispatch={dispatch} digit="6" />
+      <OperationsButton
+        dispatch={dispatch}
+        digit="x"
+        className="grid__operands-orange"
+        actiontype="SUBSTRACT"
+      />
+      <NumbersButton dispatch={dispatch} digit="1" />
+      <NumbersButton dispatch={dispatch} digit="2" />
+      <NumbersButton dispatch={dispatch} digit="3" />
+      <OperationsButton
+        dispatch={dispatch}
+        digit="+"
+        className="grid__operands-orange"
+      />
+      <NumbersButton
+        dispatch={dispatch}
+        digit="0"
+        className="grid__span-two grid__bottom-border-left"
+      />
+      <NumbersButton dispatch={dispatch} digit="," />
+      <NumbersButton
+        dispatch={dispatch}
+        digit="="
+        className="grid__bottom-border-right grid__operands-orange"
+      />
     </section>
   );
 }
