@@ -7,12 +7,17 @@ export const ACTIONS = {
   ADD_DIGIT: "add_digit",
   CHOOSE_OPERATION: "operation",
   CLEAR: "clear",
-  NUMBER: "number",
 };
 
 function reducer(state, { type, payload }) {
   switch (type) {
     case ACTIONS.ADD_DIGIT:
+      if (payload.digit === "0" && state.currentOperand === "0") return state;
+      if (payload.digit === "," && state.currentOperand.includes(","))
+        return state;
+      // if (payload.digit === "," && state.currentOperand.substring(1) === ",")
+      // return { ...state, currentOperand: `"0" + ${state.currentOperand}` };
+
       return {
         ...state,
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
@@ -103,7 +108,7 @@ function App() {
       <NumbersButton dispatch={dispatch} digit="," />
       <NumbersButton
         dispatch={dispatch}
-        operation="="
+        digit="="
         className="grid__bottom-border-right grid__operands-orange"
       />
     </section>
