@@ -30,13 +30,6 @@ function reducer(state, { type, payload }) {
         return state;
       }
 
-      if (state.currentOperand == null) {
-        return {
-          ...state,
-          operation: payload.operation,
-        };
-      }
-
       if (state.previousOperand == null) {
         return {
           ...state,
@@ -64,12 +57,21 @@ function reducer(state, { type, payload }) {
       ) {
         return state;
       }
+
+      return {
+        ...state,
+        previousOperand: null,
+        operation: null,
+        currentOperand: evaluate(state),
+      };
   }
 }
 
 function evaluate({ previousOperand, currentOperand, operation }) {
   const previous = parseFloat(previousOperand);
   const current = parseFloat(currentOperand);
+  console.log(previous);
+  console.log(current);
   if (isNaN(previous) || isNaN(current)) return "";
   let computation = "";
   switch (operation) {
@@ -86,7 +88,8 @@ function evaluate({ previousOperand, currentOperand, operation }) {
       computation = previous / current;
       break;
   }
-  return computation.toString();
+  console.log(computation);
+  return computation;
 }
 
 function App() {
