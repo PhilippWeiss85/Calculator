@@ -1,10 +1,12 @@
-function OperationsButton({ typefunction, operation, dispatch, className }) {
+import { ACTIONS } from "./App";
+
+function OperationsButton({ operation, dispatch, className }) {
   return (
     <button
       className={className}
       onClick={() =>
         dispatch({
-          type: typefunction,
+          type: ACTIONS.CHOOSE_OPERATION,
           payload: { operation },
         })
       }

@@ -7,33 +7,111 @@ export const ACTIONS = {
   ADD_DIGIT: "add_digit",
   CHOOSE_OPERATION: "operation",
   CLEAR: "clear",
+  EVALUATE: "evaluate",
+  DEFECT: "defect",
 };
 
 function reducer(state, { type, payload }) {
   switch (type) {
     case ACTIONS.ADD_DIGIT:
-      if (payload.digit === "0" && state.currentOperand === "0") return state;
-      if (payload.digit === "," && state.currentOperand.includes(","))
+      if (state.overwrite === true) {
+        return {
+          ...state,
+          currentOperand: payload.digit,
+          overwrite: false,
+        };
+      }
+
+      if (state.defect === true) {
+        return {
+          currentOperand: payload.digit,
+          defect: false,
+        };
+      }
+      if (payload.digit === "0" && state.currentOperand === "0") {
         return state;
-      // if (payload.digit === "," && state.currentOperand.substring(1) === ",")
-      // return { ...state, currentOperand: `"0" + ${state.currentOperand}` };
+      }
+      if (payload.digit === "," && state.currentOperand.includes(",")) {
+        return state;
+      }
 
       return {
         ...state,
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
       };
-    case ACTIONS.CLEAR:
-      return {};
+
+    case ACTIONS.DEFECT:
+      return {
+        defect: true,
+        currentOperand: "This action is currently not working",
+      };
+
     case ACTIONS.CHOOSE_OPERATION:
+      if (state.currentOperand == null && state.previousOperand == null) {
+        return state;
+      }
+
+      if (state.previousOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+          previousOperand: state.currentOperand,
+          currentOperand: null,
+        };
+      }
+
       return {
         ...state,
         previousOperand: state.currentOperand,
         operation: payload.operation,
-        currentOperand: null,
+        currentOperand: evaluate(state),
       };
-    default:
-      return state;
+
+    case ACTIONS.CLEAR:
+      return {};
+
+    case ACTIONS.EVALUATE:
+      if (
+        state.operation == null ||
+        state.currentOperand == null ||
+        state.previousOperand == null
+      ) {
+        return state;
+      }
+
+      return {
+        ...state,
+        overwrite: true,
+        previousOperand: null,
+        operation: null,
+        currentOperand: evaluate(state),
+      };
   }
+}
+
+function evaluate({ previousOperand, currentOperand, operation }) {
+  const previous = parseFloat(previousOperand);
+  const current = parseFloat(currentOperand);
+  console.log(previous);
+  console.log(current);
+  if (isNaN(previous) || isNaN(current)) return "";
+  let computation = "";
+  switch (operation) {
+    case "+":
+      computation = previous + current;
+      break;
+    case "-":
+      computation = previous - current;
+      break;
+    case "x":
+      computation = previous * current;
+      break;
+    case "÷":
+      computation = previous / current;
+      break;
+  }
+  console.log(computation);
+  return computation;
 }
 
 function App() {
@@ -42,36 +120,39 @@ function App() {
     {}
   );
 
-  console.log(currentOperand, previousOperand, operation);
+  console.log("currentoperand", currentOperand);
+  console.log("previousOperand", previousOperand);
+  console.log("operation", operation);
 
   return (
     <section className="grid">
       <article className="grid__output">
         <div>{currentOperand}</div>
       </article>
-      <OperationsButton
+      <button
         className="grid__operands-darkgrey"
-        dispatch={dispatch}
+        onClick={() => dispatch({ type: ACTIONS.CLEAR })}
         operation="AC"
-        typefunction={ACTIONS.CLEAR}
-      />
-      <OperationsButton
+      >
+        AC
+      </button>
+      <button
         className="grid__operands-darkgrey"
-        dispatch={dispatch}
+        onClick={() => dispatch({ type: ACTIONS.DEFECT })}
         operation="+/_"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
-      />
-      <OperationsButton
+      >
+        +/_
+      </button>
+      <button
+        onClick={() => dispatch({ type: ACTIONS.DEFECT })}
         className="grid__operands-darkgrey"
-        dispatch={dispatch}
-        operation="%"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
-      />
+      >
+        %
+      </button>
       <OperationsButton
         dispatch={dispatch}
         operation="÷"
         className="grid__operands-orange"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton dispatch={dispatch} digit="7" />
       <NumbersButton dispatch={dispatch} digit="8" />
@@ -80,7 +161,6 @@ function App() {
         dispatch={dispatch}
         operation="x"
         className="grid__operands-orange"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton dispatch={dispatch} digit="4" />
       <NumbersButton dispatch={dispatch} digit="5" />
@@ -89,7 +169,6 @@ function App() {
         dispatch={dispatch}
         operation="x"
         className="grid__operands-orange"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton dispatch={dispatch} digit="1" />
       <NumbersButton dispatch={dispatch} digit="2" />
@@ -98,7 +177,6 @@ function App() {
         dispatch={dispatch}
         operation="+"
         className="grid__operands-orange"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton
         dispatch={dispatch}
@@ -106,11 +184,13 @@ function App() {
         className="grid__span-two grid__bottom-border-left"
       />
       <NumbersButton dispatch={dispatch} digit="," />
-      <NumbersButton
-        dispatch={dispatch}
-        digit="="
+      <button
+        operation="="
         className="grid__bottom-border-right grid__operands-orange"
-      />
+        onClick={() => dispatch({ type: ACTIONS.EVALUATE })}
+      >
+        =
+      </button>
     </section>
   );
 }
