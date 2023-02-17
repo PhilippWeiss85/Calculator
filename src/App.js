@@ -8,6 +8,7 @@ export const ACTIONS = {
   CHOOSE_OPERATION: "operation",
   CLEAR: "clear",
   EVALUATE: "evaluate",
+  DEFECT: "defect",
 };
 
 function reducer(state, { type, payload }) {
@@ -20,6 +21,13 @@ function reducer(state, { type, payload }) {
           overwrite: false,
         };
       }
+
+      if (state.defect === true) {
+        return {
+          currentOperand: payload.digit,
+          defect: false,
+        };
+      }
       if (payload.digit === "0" && state.currentOperand === "0") {
         return state;
       }
@@ -30,6 +38,12 @@ function reducer(state, { type, payload }) {
       return {
         ...state,
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
+      };
+
+    case ACTIONS.DEFECT:
+      return {
+        defect: true,
+        currentOperand: "This action is currently not working",
       };
 
     case ACTIONS.CHOOSE_OPERATION:
@@ -122,16 +136,19 @@ function App() {
       >
         AC
       </button>
-      <OperationsButton
+      <button
         className="grid__operands-darkgrey"
-        dispatch={dispatch}
+        onClick={() => dispatch({ type: ACTIONS.DEFECT })}
         operation="+/_"
-      />
-      <OperationsButton
+      >
+        +/_
+      </button>
+      <button
+        onClick={() => dispatch({ type: ACTIONS.DEFECT })}
         className="grid__operands-darkgrey"
-        dispatch={dispatch}
-        operation="%"
-      />
+      >
+        %
+      </button>
       <OperationsButton
         dispatch={dispatch}
         operation="÷"
