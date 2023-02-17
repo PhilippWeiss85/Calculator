@@ -167,7 +167,7 @@ function App() {
       <NumbersButton dispatch={dispatch} digit="6" />
       <OperationsButton
         dispatch={dispatch}
-        operation="x"
+        operation="-"
         className="grid__operands-orange"
       />
       <NumbersButton dispatch={dispatch} digit="1" />
