@@ -7,33 +7,86 @@ export const ACTIONS = {
   ADD_DIGIT: "add_digit",
   CHOOSE_OPERATION: "operation",
   CLEAR: "clear",
+  EVALUATE: "evaluate",
 };
 
 function reducer(state, { type, payload }) {
   switch (type) {
     case ACTIONS.ADD_DIGIT:
-      if (payload.digit === "0" && state.currentOperand === "0") return state;
-      if (payload.digit === "," && state.currentOperand.includes(","))
+      if (payload.digit === "0" && state.currentOperand === "0") {
         return state;
-      // if (payload.digit === "," && state.currentOperand.substring(1) === ",")
-      // return { ...state, currentOperand: `"0" + ${state.currentOperand}` };
+      }
+      if (payload.digit === "," && state.currentOperand.includes(",")) {
+        return state;
+      }
 
       return {
         ...state,
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
       };
-    case ACTIONS.CLEAR:
-      return {};
+
     case ACTIONS.CHOOSE_OPERATION:
+      if (state.currentOperand == null && state.previousOperand == null) {
+        return state;
+      }
+
+      if (state.currentOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+        };
+      }
+
+      if (state.previousOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+          previousOperand: state.currentOperand,
+          currentOperand: null,
+        };
+      }
+
       return {
         ...state,
-        previousOperand: state.currentOperand,
+        previousOperand: evaluate(state),
         operation: payload.operation,
         currentOperand: null,
       };
-    default:
-      return state;
+
+    case ACTIONS.CLEAR:
+      return {};
+
+    case ACTIONS.EVALUATE:
+      if (
+        state.operation == null ||
+        state.currentOperand == null ||
+        state.previousOperand == null
+      ) {
+        return state;
+      }
   }
+}
+
+function evaluate({ previousOperand, currentOperand, operation }) {
+  const previous = parseFloat(previousOperand);
+  const current = parseFloat(currentOperand);
+  if (isNaN(previous) || isNaN(current)) return "";
+  let computation = "";
+  switch (operation) {
+    case "+":
+      computation = previous + current;
+      break;
+    case "-":
+      computation = previous - current;
+      break;
+    case "*":
+      computation = previous * current;
+      break;
+    case "÷":
+      computation = previous / current;
+      break;
+  }
+  return computation.toString();
 }
 
 function App() {
@@ -42,36 +95,36 @@ function App() {
     {}
   );
 
-  console.log(currentOperand, previousOperand, operation);
+  console.log("currentoperand", currentOperand);
+  console.log("previousOperand", previousOperand);
+  console.log("operation", operation);
 
   return (
     <section className="grid">
       <article className="grid__output">
         <div>{currentOperand}</div>
       </article>
-      <OperationsButton
+      <button
         className="grid__operands-darkgrey"
-        dispatch={dispatch}
+        onClick={() => dispatch({ type: ACTIONS.CLEAR })}
         operation="AC"
-        typefunction={ACTIONS.CLEAR}
-      />
+      >
+        AC
+      </button>
       <OperationsButton
         className="grid__operands-darkgrey"
         dispatch={dispatch}
         operation="+/_"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <OperationsButton
         className="grid__operands-darkgrey"
         dispatch={dispatch}
         operation="%"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <OperationsButton
         dispatch={dispatch}
         operation="÷"
         className="grid__operands-orange"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton dispatch={dispatch} digit="7" />
       <NumbersButton dispatch={dispatch} digit="8" />
@@ -80,7 +133,6 @@ function App() {
         dispatch={dispatch}
         operation="x"
         className="grid__operands-orange"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton dispatch={dispatch} digit="4" />
       <NumbersButton dispatch={dispatch} digit="5" />
@@ -89,7 +141,6 @@ function App() {
         dispatch={dispatch}
         operation="x"
         className="grid__operands-orange"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton dispatch={dispatch} digit="1" />
       <NumbersButton dispatch={dispatch} digit="2" />
@@ -98,7 +149,6 @@ function App() {
         dispatch={dispatch}
         operation="+"
         className="grid__operands-orange"
-        typefunction={ACTIONS.CHOOSE_OPERATION}
       />
       <NumbersButton
         dispatch={dispatch}
@@ -106,11 +156,13 @@ function App() {
         className="grid__span-two grid__bottom-border-left"
       />
       <NumbersButton dispatch={dispatch} digit="," />
-      <NumbersButton
-        dispatch={dispatch}
-        digit="="
+      <button
+        operation="="
         className="grid__bottom-border-right grid__operands-orange"
-      />
+        onClick={() => dispatch({ type: ACTIONS.EVALUATE })}
+      >
+        =
+      </button>
     </section>
   );
 }
